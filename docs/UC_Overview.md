@@ -31,3 +31,7 @@ usecaseDiagram
 | **UC04** | Game Gõ Từ Tiếng Anh | User | Người dùng gõ từ tiếng Anh tương ứng với nghĩa tiếng Việt cho trước. |
 | **UC05** | Game Gõ Nghĩa Tiếng Việt | User | Người dùng gõ nghĩa tiếng Việt tương ứng với từ tiếng Anh cho trước. |
 | **UC06** | Xem Lịch Sử & Tiến Trình | User | Người dùng xem thống kê số từ đã thuộc, điểm số các game, và chuỗi ngày học (streak). |
+| **UC07** | Tạo & Quản lý Chủ Đề Tùy Chỉnh | User | Người dùng tạo chủ đề riêng, đặt tên, chọn emoji, quản lý danh sách từ (sửa, xóa, sắp xếp) và chia sẻ qua link. |
+| **UC08** | Nhập Từ Vựng Thủ Công | User | Người dùng thêm từ vào chủ đề tùy chỉnh bằng form từng từ hoặc bulk import theo định dạng pipe-separated. |
+| **UC09** | Auto-Import từ Cambridge Dictionary | User | Người dùng nhập danh sách từ tiếng Anh, hệ thống tự tra IPA + định nghĩa, người dùng bổ sung nghĩa tiếng Việt rồi lưu. |
+| **UC10** | Xem & Clone Chủ Đề Chia Sẻ | User | Người dùng nhận link `/share/[code]`, xem preview chủ đề của người khác và clone về thư viện cá nhân. |

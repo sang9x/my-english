@@ -100,3 +100,98 @@
      - **Nếu không trùng**: Báo sai (màu đỏ) và hiển thị các nghĩa tiếng Việt đúng.
   6. Lặp lại cho đến từ cuối cùng.
   7. Hiển thị báo cáo kết quả.
+
+---
+
+## UC07: Tạo và Quản lý Chủ Đề Tùy Chỉnh (Create & Manage Custom Topic)
+
+* **Tác nhân (Actor)**: Người học (User).
+* **Mô tả**: Người dùng tạo chủ đề từ vựng của riêng mình, đặt tên, chọn emoji đại diện và quản lý danh sách từ (xem, sửa, xóa).
+* **Tiền điều kiện (Preconditions)**: Người dùng đang ở trang chủ hoặc trang quản lý chủ đề.
+* **Hậu điều kiện (Postconditions)**: Chủ đề mới được lưu trên server (SQLite) và hiển thị cùng các chủ đề hệ thống. Một `shareCode` duy nhất được sinh ra.
+* **Luồng sự kiện chính (Basic Flow)**:
+  1. Người dùng click nút **"+ Tạo chủ đề mới"** trên trang chủ.
+  2. Hệ thống hiển thị form tạo chủ đề: Tên chủ đề (bắt buộc), Mô tả ngắn (tùy chọn), Emoji đại diện (picker).
+  3. Người dùng điền thông tin và click **"Tạo"**.
+  4. Hệ thống gọi `POST /api/topics` để lưu chủ đề mới vào SQLite, sinh `shareCode` ngẫu nhiên 6 ký tự (alphanumeric).
+  5. Hệ thống điều hướng người dùng vào trang quản lý chủ đề: `/my-topics/[topicId]`.
+  6. Trang quản lý hiển thị: danh sách từ vựng hiện có (dạng bảng), các nút "Thêm từ", "Nhập hàng loạt", "Auto-Import", nút chia sẻ.
+  7. Người dùng có thể click nút **Sửa** (✏️) bên cạnh từng từ để chỉnh sửa inline.
+  8. Người dùng có thể click nút **Xóa** (🗑️) bên cạnh từng từ, hệ thống hiển thị confirm dialog trước khi xóa.
+* **Luồng thay thế (Alternative Flow)**:
+  * *Xóa chủ đề*: Người dùng click nút "Xóa chủ đề" ở góc trang, hệ thống yêu cầu nhập lại tên chủ đề để xác nhận, sau đó gọi `DELETE /api/topics/[id]`.
+  * *Sắp xếp danh sách*: Người dùng click tiêu đề cột "Từ tiếng Anh" hoặc "Ngày thêm" để đổi thứ tự sắp xếp.
+  * *Chia sẻ chủ đề*: Người dùng click nút **"Chia sẻ"**, hệ thống hiển thị modal với link `https://app.com/share/[shareCode]` và nút Copy.
+
+---
+
+## UC08: Nhập Từ Vựng Thủ Công (Manual Vocabulary Import)
+
+* **Tác nhân (Actor)**: Người học (User).
+* **Mô tả**: Người dùng thêm từ mới vào chủ đề tùy chỉnh theo 2 cách: nhập từng từ qua form chi tiết, hoặc nhập hàng loạt qua textarea.
+* **Tiền điều kiện (Preconditions)**: Người dùng đang ở trang quản lý chủ đề tùy chỉnh (UC07 đã hoàn thành).
+* **Hậu điều kiện (Postconditions)**: Các từ mới được lưu vào SQLite và hiển thị trong danh sách.
+* **Luồng sự kiện chính — Cách 1: Nhập từng từ (Single Word Form)**:
+  1. Người dùng click **"+ Thêm từ"**.
+  2. Hệ thống hiển thị form với các trường: Từ tiếng Anh (*), Nghĩa tiếng Việt — nhiều nghĩa cách nhau dấu phẩy (*), Phiên âm IPA (tùy chọn), Câu ví dụ tiếng Anh (tùy chọn), Nghĩa câu ví dụ tiếng Việt (tùy chọn).
+  3. Người dùng điền thông tin và click **"Lưu từ"**.
+  4. Hệ thống gọi `POST /api/topics/[id]/words` để lưu từ.
+  5. Hệ thống hiển thị thông báo thành công và form reset để nhập từ tiếp theo (nếu muốn).
+* **Luồng sự kiện chính — Cách 2: Nhập hàng loạt (Bulk Import)**:
+  1. Người dùng click **"Nhập hàng loạt"**.
+  2. Hệ thống hiển thị textarea với hướng dẫn định dạng: `từ_tiếng_anh | nghĩa_tiếng_việt | ipa_tùy_chọn` (mỗi dòng một từ). Có ô ví dụ mẫu.
+  3. Người dùng dán/gõ danh sách từ vào textarea.
+  4. Người dùng click **"Xem trước"**. Hệ thống phân tích cú pháp và hiển thị bảng preview với cột: từ tiếng Anh, nghĩa tiếng Việt, IPA, trạng thái (hợp lệ ✅ / lỗi cú pháp ❌).
+  5. Người dùng xem xét preview, có thể quay lại sửa nếu có dòng lỗi.
+  6. Người dùng click **"Xác nhận nhập"**. Hệ thống lưu hàng loạt qua `POST /api/topics/[id]/words/bulk`.
+  7. Hệ thống hiển thị kết quả: "Đã thêm X từ thành công".
+* **Luồng thay thế (Alternative Flow)**:
+  * *Trùng lặp từ*: Nếu từ tiếng Anh đã tồn tại trong chủ đề, hệ thống đánh dấu ⚠️ trong preview và hỏi người dùng có muốn ghi đè không.
+
+---
+
+## UC09: Tra Cứu và Nạp Từ Tự Động từ Cambridge Dictionary (Auto-Import)
+
+* **Tác nhân (Actor)**: Người học (User).
+* **Mô tả**: Người dùng nhập danh sách từ tiếng Anh, hệ thống tự động tra cứu thông tin (IPA, định nghĩa, ví dụ) qua Cambridge Dictionary API và cho phép người dùng bổ sung nghĩa tiếng Việt trước khi lưu.
+* **Tiền điều kiện (Preconditions)**: Người dùng đang ở trang quản lý chủ đề tùy chỉnh. Có kết nối Internet.
+* **Hậu điều kiện (Postconditions)**: Các từ được chọn (kèm nghĩa tiếng Việt đã bổ sung) được lưu vào chủ đề.
+* **Luồng sự kiện chính (Basic Flow)**:
+  1. Người dùng click **"Auto-Import từ Dictionary"**.
+  2. Hệ thống hiển thị textarea hướng dẫn nhập danh sách từ tiếng Anh (cách nhau bằng dấu phẩy hoặc xuống dòng). Ví dụ: `apple, beautiful, technology`.
+  3. Người dùng nhập danh sách từ và click **"Tra cứu"**.
+  4. Hệ thống hiển thị trạng thái loading ("Đang tra cứu X từ...") và lần lượt gọi `GET /api/lookup?word={word}` cho từng từ.
+  5. `GET /api/lookup` đóng vai trò proxy: server gọi `https://api.dictionaryapi.dev/api/v2/entries/en/{word}`, trích xuất IPA, định nghĩa tiếng Anh, câu ví dụ rồi trả về cho client.
+  6. Sau khi tra cứu xong, hệ thống hiển thị bảng kết quả preview với các cột:
+     - Từ tiếng Anh
+     - IPA (tự động điền)
+     - Định nghĩa tiếng Anh (tự động điền, có thể sửa)
+     - **Nghĩa tiếng Việt** (ô input rỗng — người dùng tự điền, bắt buộc)
+     - Câu ví dụ (tự động điền nếu có)
+     - Trạng thái: ✅ Tìm thấy / ❌ Không tìm thấy
+  7. Người dùng điền nghĩa tiếng Việt vào từng dòng, có thể bỏ tích (uncheck) các từ không muốn thêm.
+  8. Người dùng click **"Thêm X từ đã chọn"**. Hệ thống gọi `POST /api/topics/[id]/words/bulk` với các từ được chọn.
+  9. Hệ thống hiển thị thông báo thành công và cập nhật danh sách.
+* **Luồng thay thế (Alternative Flow)**:
+  * *Bước 5 — Từ không tìm thấy*: Nếu API trả về lỗi 404 cho một từ, dòng đó được đánh dấu ❌ "Không tìm thấy". Người dùng vẫn có thể nhập tay các thông tin còn thiếu và chọn để lưu.
+  * *Bước 4 — Timeout*: Nếu request quá 5 giây, hiển thị thông báo lỗi và cho phép thử lại từng từ.
+  * *Bước 6 — Bỏ qua nghĩa tiếng Việt*: Người dùng có thể để trống trường nghĩa tiếng Việt và vẫn lưu; hệ thống cảnh báo nhưng không chặn.
+
+---
+
+## UC10: Xem và Clone Chủ Đề Được Chia Sẻ (View & Clone Shared Topic)
+
+* **Tác nhân (Actor)**: Người học (User) — người nhận link chia sẻ.
+* **Mô tả**: Người dùng truy cập link chia sẻ của chủ đề từ vựng do người khác tạo, xem trước danh sách từ và có thể clone về thư viện cá nhân.
+* **Tiền điều kiện (Preconditions)**: Người dùng có link dạng `/share/[shareCode]`.
+* **Hậu điều kiện (Postconditions)**: Nếu người dùng clone, một bản sao chủ đề được tạo mới độc lập trong hệ thống.
+* **Luồng sự kiện chính (Basic Flow)**:
+  1. Người dùng truy cập URL `/share/[shareCode]`.
+  2. Hệ thống gọi `GET /api/share/[shareCode]` để lấy thông tin chủ đề.
+  3. Hệ thống hiển thị trang preview: tên chủ đề, emoji, mô tả, số lượng từ, danh sách từ (chỉ đọc — hiển thị từ tiếng Anh, IPA, nghĩa tiếng Việt).
+  4. Người dùng click **"Clone chủ đề này về thư viện của tôi"**.
+  5. Hệ thống gọi `POST /api/share/[shareCode]/clone`, tạo bản sao chủ đề với tất cả từ vựng, gán `shareCode` mới.
+  6. Hệ thống điều hướng người dùng đến trang quản lý chủ đề vừa được clone (`/my-topics/[newTopicId]`).
+* **Luồng thay thế (Alternative Flow)**:
+  * *shareCode không tồn tại*: Hệ thống hiển thị trang lỗi 404 với thông báo "Chủ đề không tồn tại hoặc đã bị xóa".
+  * *Sử dụng trực tiếp không clone*: Người dùng có thể bắt đầu học ngay từ trang preview mà không cần clone (dùng chủ đề ở chế độ read-only).
