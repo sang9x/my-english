@@ -1,36 +1,56 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MyEnglish - English Sentence Builder & Vocabulary Learning Web App
 
-## Getting Started
+MyEnglish là một ứng dụng web học tập tương tác giúp người học cải thiện vốn từ vựng tiếng Anh theo chủ đề, rèn luyện phản xạ ngữ pháp qua game sắp xếp câu, và ôn luyện hai chiều (Anh-Việt, Việt-Anh) qua các game gõ từ trực quan.
 
-First, run the development server:
+## 🚀 Tính Năng Chính
+1. **Chọn chủ đề học tập (Topic Selection)**: Lựa chọn các chủ đề phổ biến (Du lịch, TOEIC, Giao tiếp...).
+2. **Học qua Flashcards**: Xem từ vựng kèm phát âm IPA, nghĩa tiếng Việt, ví dụ và âm thanh chuẩn.
+3. **Game Sắp Xếp Câu (Sentence Builder)**: Kéo thả/click các từ bị xáo trộn để tạo câu đúng.
+4. **Game Gõ từ tiếng Anh (English Typing)**: Gõ từ tiếng Anh dựa theo nghĩa tiếng Việt và các gợi ý.
+5. **Game Gõ nghĩa tiếng Việt (Vietnamese Typing)**: Gõ nghĩa tiếng Việt tương ứng với từ tiếng Anh.
+6. **Thống Kê Tiến Trình**: Theo dõi streak học tập và điểm số tích lũy.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 🛠️ Công Nghệ Sử Dụng (Tech Stack)
+* **Frontend**: Next.js 15 (React 19), TypeScript, Tailwind CSS.
+* **Component Library**: Shadcn/ui (Radix UI).
+* **Game & Animation**: `@dnd-kit/core`, `Framer Motion`.
+* **State Management**: `Zustand`.
+* **Database & Auth**: `Supabase` (PostgreSQL & Go-auth).
+* **Deployment**: `Vercel` (tích hợp CI/CD với GitHub).
+
+## 📂 Cấu Trúc Thư Mục Dự Án
+```text
+├── .agents/              # Cấu hình AI Agent (Skills & Rules của dự án)
+├── docs/                 # Tài liệu đặc tả nghiệp vụ (SRS, UC)
+│   ├── SRS.md            # Đặc tả yêu cầu phần mềm
+│   ├── UC_Overview.md    # Tổng quan Use Cases
+│   └── UC_Detailed.md    # Đặc tả Use Cases chi tiết
+├── src/
+│   ├── app/              # Next.js App Router (Pages & APIs)
+│   ├── components/       # Các UI Component dùng chung (Flashcard, Game, Layout...)
+│   └── lib/              # Tiện ích, cấu hình database/auth/caching
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## ⚙️ Hướng Dẫn Phát Triển Cho Cả Người & AI Agent
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Dự án này tích hợp các quy tắc phát triển tự động cho AI Coding Agent thông qua thư mục `.agents/`. Khi bạn ra lệnh phát triển tính năng mới cho AI, hệ thống sẽ thực hiện theo quy trình 6 bước bắt buộc:
+1. Cập nhật yêu cầu vào [SRS.md](file:///d:/my-project/my-english/docs/SRS.md).
+2. Vẽ sơ đồ/viết kịch bản vào [UC_Detailed.md](file:///d:/my-project/my-english/docs/UC_Detailed.md).
+3. Triển khai code trong `src/`.
+4. Viết các test case tự động.
+5. Chạy test và sửa lỗi bằng lệnh test local.
+6. Commit, push lên GitHub và deploy lên Vercel.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Chạy dự án ở local:
+1. Cài đặt dependency:
+   ```bash
+   npm install
+   ```
+2. Chạy server phát triển:
+   ```bash
+   npm run dev
+   ```
+3. Chạy test:
+   ```bash
+   npm run test
+   ```
