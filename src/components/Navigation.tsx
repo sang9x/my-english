@@ -2,15 +2,28 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { getStreak } from '@/lib/storage';
 
 export default function Navigation() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [streakCount, setStreakCount] = useState(0);
+
+  useEffect(() => {
+    try {
+      const s = getStreak();
+      if (s && s.currentStreak > 0) {
+        setStreakCount(s.currentStreak);
+      }
+    } catch {
+      // silently fail (SSR safe)
+    }
+  }, []);
 
   const links = [
     { href: '/my-topics', label: 'Chủ đề của tôi' },
-    { href: '/progress', label: '📊 Điểm số' },
+    { href: '/progress', label: streakCount > 0 ? `📊 Điểm số (🔥 ${streakCount})` : '📊 Điểm số' },
   ];
 
   return (

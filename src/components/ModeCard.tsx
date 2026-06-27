@@ -1,5 +1,8 @@
+'use client';
+
 import Link from 'next/link';
 import type { GameMode } from '@/lib/types';
+
 
 interface ModeCardProps {
   mode: GameMode;

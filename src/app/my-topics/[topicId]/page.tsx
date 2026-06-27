@@ -22,9 +22,19 @@ export default function ManageTopicPage({ params }: { params: Promise<{ topicId:
   const [showShare, setShowShare] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editData, setEditData] = useState<Partial<CustomWord>>({});
+  
+  // Edit topic state
+  const [showEditTopic, setShowEditTopic] = useState(false);
+  const [editTopicName, setEditTopicName] = useState('');
+  const [editTopicDescription, setEditTopicDescription] = useState('');
+  const [editTopicEmoji, setEditTopicEmoji] = useState('📚');
+  const [updatingTopic, setUpdatingTopic] = useState(false);
+
+  // Delete topic state
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [deleteInput, setDeleteInput] = useState('');
   const [deleting, setDeleting] = useState(false);
+
   const [sortCol, setSortCol] = useState<'english' | 'createdAt'>('createdAt');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
 
@@ -42,7 +52,13 @@ export default function ManageTopicPage({ params }: { params: Promise<{ topicId:
         fetch(`/api/topics/${id}`),
         fetch(`/api/topics/${id}/words`),
       ]);
-      if (tr.ok) { const d = await tr.json(); setTopic(d.topic); }
+      if (tr.ok) {
+        const d = await tr.json();
+        setTopic(d.topic);
+        setEditTopicName(d.topic.name);
+        setEditTopicDescription(d.topic.description || '');
+        setEditTopicEmoji(d.topic.emoji || '📚');
+      }
       if (wr.ok) { const d = await wr.json(); setWords(d.words ?? []); }
     } catch { /* ignore */ }
     finally { setLoading(false); }
@@ -86,6 +102,31 @@ export default function ManageTopicPage({ params }: { params: Promise<{ topicId:
     setDeleting(true);
     await fetch(`/api/topics/${topicId}`, { method: 'DELETE' });
     router.push('/my-topics');
+  };
+
+  const handleUpdateTopic = async () => {
+    if (!editTopicName.trim()) return;
+    setUpdatingTopic(true);
+    try {
+      const res = await fetch(`/api/topics/${topicId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: editTopicName.trim(),
+          description: editTopicDescription.trim(),
+          emoji: editTopicEmoji,
+        }),
+      });
+      if (res.ok) {
+        const d = await res.json();
+        setTopic(d.topic);
+        setShowEditTopic(false);
+      }
+    } catch {
+      // ignore
+    } finally {
+      setUpdatingTopic(false);
+    }
   };
 
   const tabs: { key: Tab; label: string }[] = [
@@ -141,6 +182,7 @@ export default function ManageTopicPage({ params }: { params: Promise<{ topicId:
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
               <Link href={`/topic/${topicId}`} className="btn btn-primary btn-sm" style={{ textDecoration: 'none' }}>🎮 Học</Link>
               <button className="btn btn-secondary btn-sm" onClick={() => setShowShare(true)}>🔗 Chia sẻ</button>
+              <button className="btn btn-secondary btn-sm" onClick={() => setShowEditTopic(true)}>✏️ Sửa</button>
               <button className="btn btn-ghost btn-sm" style={{ color: 'var(--error)' }} onClick={() => setDeleteConfirm(true)}>🗑️ Xóa</button>
             </div>
           </div>
@@ -227,6 +269,82 @@ export default function ManageTopicPage({ params }: { params: Promise<{ topicId:
       {/* Share modal */}
       {showShare && (
         <ShareModal shareCode={topic.shareCode} topicName={topic.name} onClose={() => setShowShare(false)} />
+      )}
+
+      {/* Edit Topic Modal */}
+      {showEditTopic && (
+        <div className="modal-overlay" onClick={() => setShowEditTopic(false)}>
+          <div className="modal-content animate-scale-in" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '500px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <h2 style={{ fontWeight: 700, fontSize: '1.25rem', color: 'var(--text-primary)', margin: 0 }}>✏️ Sửa thông tin chủ đề</h2>
+              <button className="btn btn-ghost btn-sm" onClick={() => setShowEditTopic(false)}>✕</button>
+            </div>
+
+            {/* Emoji picker */}
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ display: 'block', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '8px', fontSize: '0.9375rem' }}>
+                Biểu tượng
+              </label>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', maxHeight: '100px', overflowY: 'auto', padding: '4px', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-md)' }}>
+                {['📚', '✈️', '💼', '👨', '👩', '👧', '💻', '📊', '🎓', '🌍', '🏋️', '🍕', '🎵', '🏠', '💡', '🔬', '🎨', '⚽', '🌿', '🛒', '💊', '📰'].map((e) => (
+                  <button
+                    type="button"
+                    key={e}
+                    onClick={() => setEditTopicEmoji(e)}
+                    style={{
+                      width: '36px', height: '36px', fontSize: '1.25rem', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      border: `2px solid ${editTopicEmoji === e ? 'var(--brand-violet)' : 'transparent'}`,
+                      borderRadius: 'var(--radius-md)', background: editTopicEmoji === e ? 'rgba(139,92,246,0.1)' : 'transparent',
+                      cursor: 'pointer', transition: 'all var(--transition-fast)',
+                    }}
+                  >
+                    {e}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Name */}
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ display: 'block', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '8px', fontSize: '0.9375rem' }}>
+                Tên chủ đề <span style={{ color: 'var(--error)' }}>*</span>
+              </label>
+              <input
+                className="input"
+                value={editTopicName}
+                onChange={(e) => setEditTopicName(e.target.value)}
+                placeholder="Tên chủ đề..."
+                maxLength={100}
+              />
+            </div>
+
+            {/* Description */}
+            <div style={{ marginBottom: '24px' }}>
+              <label style={{ display: 'block', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '8px', fontSize: '0.9375rem' }}>
+                Mô tả
+              </label>
+              <textarea
+                className="textarea"
+                value={editTopicDescription}
+                onChange={(e) => setEditTopicDescription(e.target.value)}
+                placeholder="Mô tả..."
+                rows={3}
+              />
+            </div>
+
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button
+                className="btn btn-primary"
+                disabled={!editTopicName.trim() || updatingTopic}
+                onClick={handleUpdateTopic}
+                style={{ flex: 1 }}
+              >
+                {updatingTopic ? '⏳ Đang lưu...' : 'Lưu thay đổi'}
+              </button>
+              <button className="btn btn-secondary" onClick={() => setShowEditTopic(false)}>Hủy</button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Delete confirm modal */}
