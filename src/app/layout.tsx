@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { AppProvider } from "@/context/AppContext";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -32,8 +33,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="vi" className={inter.variable}>
-      <body className="min-h-dvh flex flex-col antialiased">
-        {children}
+      <body style={{ minHeight: "100dvh", display: "flex", flexDirection: "column" }}>
+        <AppProvider>
+          {children}
+        </AppProvider>
       </body>
     </html>
   );

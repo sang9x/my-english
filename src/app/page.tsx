@@ -1,65 +1,178 @@
-import Image from "next/image";
+import Navigation from '@/components/Navigation';
+import TopicCard from '@/components/TopicCard';
+import CustomTopicsSection from '@/components/CustomTopicsSection';
+import { TOPICS } from '@/lib/data';
+import Link from 'next/link';
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div className="page-wrapper" style={{ minHeight: '100dvh' }}>
+      <Navigation />
+
+      {/* Hero */}
+      <section
+        style={{
+          padding: '80px 0 60px',
+          textAlign: 'center',
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+      >
+        <div className="container-app">
+          <div
+            className="animate-slide-up"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '6px 16px',
+              borderRadius: 'var(--radius-full)',
+              background: 'rgba(139,92,246,0.12)',
+              border: '1px solid rgba(139,92,246,0.25)',
+              fontSize: '0.875rem',
+              color: 'var(--brand-violet-light)',
+              fontWeight: 600,
+              marginBottom: '24px',
+            }}
+          >
+            ✨ Học từ vựng qua trò chơi tương tác
+          </div>
+
+          <h1 className="text-hero animate-slide-up" style={{ animationDelay: '80ms', marginBottom: '16px' }}>
+            Học Tiếng Anh{' '}
+            <span className="text-gradient">Thú Vị</span>
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+
+          <p
+            className="animate-slide-up"
+            style={{
+              animationDelay: '160ms',
+              fontSize: '1.125rem',
+              color: 'var(--text-secondary)',
+              maxWidth: '560px',
+              margin: '0 auto 36px',
+              lineHeight: 1.7,
+            }}
+          >
+            Làm chủ từ vựng tiếng Anh qua Flashcard, Game Sắp xếp câu và Gõ từ.
+            Tự tạo bộ từ vựng và chia sẻ với bạn bè.
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+
+          <div
+            className="animate-slide-up"
+            style={{ animationDelay: '240ms', display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            <Link href="#topics" className="btn btn-primary btn-lg" style={{ textDecoration: 'none' }}>
+              🚀 Bắt đầu học ngay
+            </Link>
+            <Link href="/my-topics/new" className="btn btn-secondary btn-lg" style={{ textDecoration: 'none' }}>
+              + Tạo bộ từ của tôi
+            </Link>
+          </div>
         </div>
-      </main>
+
+        {/* Decorative orbs */}
+        <div
+          style={{
+            position: 'absolute',
+            top: '-100px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            width: '600px',
+            height: '400px',
+            background: 'radial-gradient(ellipse, rgba(139,92,246,0.15) 0%, transparent 70%)',
+            pointerEvents: 'none',
+          }}
+        />
+      </section>
+
+      {/* System Topics */}
+      <section id="topics" style={{ padding: '0 0 60px' }}>
+        <div className="container-app">
+          <div style={{ marginBottom: '28px' }}>
+            <h2
+              style={{
+                fontSize: '1.375rem',
+                fontWeight: 700,
+                color: 'var(--text-primary)',
+                marginBottom: '6px',
+              }}
+            >
+              📚 Chủ đề học tập
+            </h2>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9375rem' }}>
+              5 chủ đề từ vựng được tuyển chọn kỹ lưỡng
+            </p>
+          </div>
+
+          <div
+            className="stagger-children"
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+              gap: '16px',
+            }}
+          >
+            {TOPICS.map((topic) => (
+              <div key={topic.id} className="animate-slide-up">
+                <TopicCard topic={topic} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Custom Topics */}
+      <section style={{ padding: '0 0 80px' }}>
+        <div className="container-app">
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginBottom: '24px',
+              flexWrap: 'wrap',
+              gap: '12px',
+            }}
+          >
+            <div>
+              <h2
+                style={{
+                  fontSize: '1.375rem',
+                  fontWeight: 700,
+                  color: 'var(--text-primary)',
+                  marginBottom: '4px',
+                }}
+              >
+                🗂️ Chủ đề của tôi
+              </h2>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.9375rem' }}>
+                Bộ từ vựng do bạn tự tạo
+              </p>
+            </div>
+            <Link href="/my-topics" className="btn btn-ghost btn-sm" style={{ textDecoration: 'none' }}>
+              Quản lý →
+            </Link>
+          </div>
+
+          <CustomTopicsSection />
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer
+        style={{
+          borderTop: '1px solid var(--border-subtle)',
+          padding: '24px 0',
+          textAlign: 'center',
+          color: 'var(--text-muted)',
+          fontSize: '0.875rem',
+        }}
+      >
+        <div className="container-app">
+          Made with ❤️ · MyEnglish — Học từ vựng tiếng Anh mỗi ngày
+        </div>
+      </footer>
     </div>
   );
 }
